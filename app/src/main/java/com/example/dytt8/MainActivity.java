@@ -40,8 +40,9 @@ public class MainActivity extends AppCompatActivity {
     List<MovieCtx> movieCtxes = new ArrayList<>();
 
     static String BASE_CODEC = "GB2312";
-    static String base_url = "https://dytt.dytt8.net";
-    String index_url = "https://dytt.dytt8.net/html/gndy/dyzz/index.html";
+    String base_url = "https://dytt.dytt8.net";
+    //    String base_url = "https://www.ygdy8.net";
+    String index_url = "/html/gndy/dyzz/index.html";
     ListView listView_movies = null;
 
 
@@ -59,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
             URL obj = new URL(url);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestProperty("User-Agent", "Mozilla/5.0");
-
+            con.setConnectTimeout(2000);
+            con.setReadTimeout(2000);
             // 设置请求的编码为GB2312
             con.setRequestProperty("Accept-Charset", BASE_CODEC);
 
@@ -96,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                         ctx.url_img = img.toString();
                         ctx.webctx = tds.toString();
 //                        System.out.println(td.text());
-                        System.out.println(img.toString());
+//                        System.out.println(img.toString());
                         break; // 如果只需要第一个匹配的img标签，可以在这里break
                     }
                     break; // 如果只处理第一个匹配的td，可以在这里break
@@ -118,10 +120,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    URL obj = new URL(index_url);
+                    URL obj = new URL(base_url + index_url);
                     HttpURLConnection con = (HttpURLConnection) obj.openConnection();
                     con.setRequestProperty("User-Agent", "Mozilla/5.0");
-
+                    con.setConnectTimeout(2000);
+                    con.setReadTimeout(2000);
                     // 设置请求的编码，这里使用UTF-8，因为Jsoup默认使用UTF-8
                     //            con.setRequestProperty("Accept-Charset", "UTF-8");
                     con.setRequestProperty("Accept-Charset", BASE_CODEC);
@@ -185,8 +188,10 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
 
-                            Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_LONG).show();
-
+//                            Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this, "dytt8不叼照，使用阳光电影试试", Toast.LENGTH_LONG).show();
+                            base_url = "https://www.ygdy8.net";
+                            update_movies_list();
                         }
                     });
                 }
@@ -229,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             img.setInitialScale(85);
-                            img.loadData(data.url_img, "text/html", base_url);
+                            img.loadData(data.url_img, "text/html", BASE_CODEC);
                         }
                     });
                 }
