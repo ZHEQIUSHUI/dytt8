@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     static String BASE_CODEC = "GB2312";
     String base_url = "https://dytt.dytt8.net";
     //    String base_url = "https://www.ygdy8.net";
-    String index_url = "/html/gndy/dyzz/index.html";
+    String index_url = "/index.htm";
     ListView listView_movies = null;
 
 
@@ -82,6 +82,15 @@ public class MainActivity extends AppCompatActivity {
 
             // 使用Jsoup解析HTML内容
             org.jsoup.nodes.Document soup = Jsoup.parse(content);
+
+            Elements title_tds = soup.select("div[class=title_all]");
+
+            for (org.jsoup.nodes.Element td : title_tds) {
+//                System.out.println(td.select("font").text());
+                ctx.name = td.select("font").text();
+                System.out.println(ctx.name);
+                break;
+            }
 
 //            System.out.println(soup);
             // 查找所有的td标签
@@ -161,14 +170,21 @@ public class MainActivity extends AppCompatActivity {
 
                     // 查找所有的a标签，其中包含class "ulink"
                     movieCtxes.clear();
-                    Elements links = soup.select("a[class=ulink]");
-                    for (org.jsoup.nodes.Element link : links) {
-                        String href = link.attr("href");
-                        String text = link.text();
-                        System.out.println(href + " " + text);
-                        MovieCtx ctx = new MovieCtx(text, href);
+                    int idx = 0;
+                    Elements co_contents = soup.select("div[class=co_content2]");
+                    for (org.jsoup.nodes.Element co_content : co_contents) {
+                        Elements links = co_content.select("a");
+                        for (org.jsoup.nodes.Element link : links) {
 
-                        movieCtxes.add(ctx);
+                            String href = link.attr("href");
+                            String text = link.text();
+                            System.out.println(href + " " + text);
+                            MovieCtx ctx = new MovieCtx(text, href);
+                            idx++;
+                            if (idx == 1)
+                                continue;
+                            movieCtxes.add(ctx);
+                        }
                     }
 
                     handler.post(new Runnable() {
@@ -219,10 +235,10 @@ public class MainActivity extends AppCompatActivity {
             @SuppressLint("ViewHolder") View view1 = LayoutInflater.from(parent.getContext()).inflate(RESOURCE_ID, parent, false);
             MovieCtx data = getItem(position);
             TextView txt = view1.findViewById(R.id.movie_name);
+            WebView img = view1.findViewById(R.id.movie_img);
+
             txt.setText(data.name);
 
-            WebView img = view1.findViewById(R.id.movie_img);
-//                img.setImageURL(data.url_img);
             mDic.put(position, view1);
 
             Handler handler = new Handler(Looper.getMainLooper());
@@ -233,8 +249,9 @@ public class MainActivity extends AppCompatActivity {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            img.setInitialScale(85);
+                            img.setInitialScale(88);
                             img.loadData(data.url_img, "text/html", BASE_CODEC);
+                            txt.setText(data.name);
                         }
                     });
                 }

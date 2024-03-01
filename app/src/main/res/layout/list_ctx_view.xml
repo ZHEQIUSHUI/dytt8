@@ -11,7 +11,7 @@
 
     <TextView
         android:layout_width="200dp"
-        android:layout_height="100dp"
+        android:layout_height="200dp"
         android:layout_alignParentRight="true"
         android:gravity="center"
         android:text="2023年科幻冒险《动物王国》BD法语中字"
